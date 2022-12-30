@@ -1,0 +1,41 @@
+{
+    "name": "nearata/flarum-ext-related-discussions",
+    "description": "No description.",
+    "keywords": [
+        "flarum"
+    ],
+    "type": "flarum-extension",
+    "license": "Unlicense",
+    "require": {
+        "flarum/core": "^1.6.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13.0"
+    },
+    "authors": [
+        {
+            "name": "Nearata",
+            "email": "nearata@protonmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Nearata\\RelatedDiscussions\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Related Discussions",
+            "category": "feature",
+            "icon": {
+                "name": "far fa-comments",
+                "color": "#fff",
+                "backgroundColor": "#000"
+            }
+        }
+    },
+    "scripts": {
+        "format": "php-cs-fixer fix src"
+    }
+}
