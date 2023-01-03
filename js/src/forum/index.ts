@@ -20,7 +20,7 @@ app.initializers.add('nearata/related-discussions', () => {
     return [
       original(),
       m('.DiscussionList.nearataRelatedDiscussions', [
-        m('h3', app.translator.trans('nearata-related-discussions.forum.discussion_list_title')),
+        m('h3.DiscussionList-title', app.translator.trans('nearata-related-discussions.forum.discussion_list_title')),
         m('ul.DiscussionList-discussions[role=feed]', [
           discussions.map((discussion, index) => {
             return m(

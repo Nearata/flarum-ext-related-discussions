@@ -1,6 +1,6 @@
 {
     "name": "nearata/flarum-ext-related-discussions",
-    "description": "No description.",
+    "description": "Shows related discussions.",
     "keywords": [
         "flarum"
     ],

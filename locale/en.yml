@@ -2,5 +2,10 @@ nearata-related-discussions:
   admin:
     settings:
       allow_guests: Allow Guests
+      algorithm: Algorithm
+      algorithm_options:
+        random: Random
+      max_discussions: Max Discussions
+      max_discussions_help: Default is <strong>5</strong>.
   forum:
     discussion_list_title: Related Discussions

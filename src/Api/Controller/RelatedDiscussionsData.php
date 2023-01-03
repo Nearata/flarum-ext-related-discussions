@@ -27,9 +27,36 @@ class RelatedDiscussionsData
             return;
         }
 
-        $discussion['nearataRelatedDiscussions'] = Discussion::all()
+        $maxDiscussions = (int) $this->settings->get('nearata-related-discussions.max-discussions');
+
+        if ($maxDiscussions == 0) {
+            $maxDiscussions = 5;
+        }
+
+        $results = Discussion::all()
             ->filter(function (Discussion $i) use ($discussion) {
                 return $i->id != $discussion->id;
+            })
+            // flarum/tags
+            ->filter(function (Discussion $i) use ($discussion) {
+                if (is_null($discussion->tags)) {
+                    return true;
+                }
+
+                $tags = $discussion->tags->map(function ($i) {
+                    return $i->name;
+                })->first();
+
+                return $i->tags->firstWhere('name', $tags);
             });
+
+        $alg = $this->settings->get('nearata-related-discussions.algorithm');
+
+        if ($alg == 'random') {
+            $results = $results->shuffle();
+            $results = $results->splice(0, $maxDiscussions);
+        }
+
+        $discussion['nearataRelatedDiscussions'] = $results->splice(0, $maxDiscussions);
     }
 }
