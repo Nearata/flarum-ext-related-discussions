@@ -9,9 +9,6 @@
     "require": {
         "flarum/core": "^1.6.0"
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.13.0"
-    },
     "authors": [
         {
             "name": "Nearata",
@@ -34,8 +31,5 @@
                 "backgroundColor": "#000"
             }
         }
-    },
-    "scripts": {
-        "format": "php-cs-fixer fix src"
     }
 }
