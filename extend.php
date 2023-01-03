@@ -28,4 +28,9 @@ return [
     (new Extend\ApiController(ShowDiscussionController::class))
         ->addInclude(['nearataRelatedDiscussions', 'nearataRelatedDiscussions.user', 'nearataRelatedDiscussions.tags'])
         ->prepareDataForSerialization(RelatedDiscussionsData::class),
+
+    (new Extend\Settings)
+        ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', function ($value) {
+            return boolval($value);
+        })
 ];

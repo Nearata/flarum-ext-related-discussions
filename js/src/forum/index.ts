@@ -11,6 +11,12 @@ app.initializers.add('nearata/related-discussions', () => {
   override(PostStream.prototype, 'view', function (original) {
     const discussions: Array<Discussion> = this.discussion.nearataRelatedDiscussions();
 
+    const allowGuests = app.forum.attribute('nearataRelatedDiscussionsAllowGuests');
+
+    if (!app.session.user && !allowGuests) {
+      return original();
+    }
+
     return [
       original(),
       m('.DiscussionList.nearataRelatedDiscussions', [

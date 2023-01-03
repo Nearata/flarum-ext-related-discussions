@@ -1,3 +1,6 @@
 nearata-related-discussions:
+  admin:
+    settings:
+      allow_guests: Allow Guests
   forum:
     discussion_list_title: Related Discussions
