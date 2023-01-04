@@ -50,9 +50,9 @@ class RelatedDiscussionsData
                 return $i->tags->firstWhere('name', $tags);
             });
 
-        $alg = $this->settings->get('nearata-related-discussions.algorithm');
+        $generator = $this->settings->get('nearata-related-discussions.generator');
 
-        if ($alg == 'random') {
+        if ($generator == 'random') {
             $min = min($maxDiscussions, count($results));
             $results = $results->random($min);
         }
