@@ -53,10 +53,10 @@ class RelatedDiscussionsData
         $alg = $this->settings->get('nearata-related-discussions.algorithm');
 
         if ($alg == 'random') {
-            $results = $results->shuffle();
-            $results = $results->splice(0, $maxDiscussions);
+            $min = min($maxDiscussions, count($results));
+            $results = $results->random($min);
         }
 
-        $discussion['nearataRelatedDiscussions'] = $results->splice(0, $maxDiscussions);
+        $discussion['nearataRelatedDiscussions'] = $results;
     }
 }
