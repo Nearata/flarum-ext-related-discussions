@@ -9,11 +9,11 @@ app.initializers.add('nearata/related-discussions', () => {
       label: app.translator.trans('nearata-related-discussions.admin.settings.allow_guests'),
     })
     .registerSetting({
-      setting: 'nearata-related-discussions.algorithm',
+      setting: 'nearata-related-discussions.generator',
       type: 'select',
-      label: app.translator.trans('nearata-related-discussions.admin.settings.algorithm'),
+      label: app.translator.trans('nearata-related-discussions.admin.settings.generator'),
       options: {
-        random: app.translator.trans('nearata-related-discussions.admin.settings.algorithm_options.random'),
+        random: app.translator.trans('nearata-related-discussions.admin.settings.generator_options.random'),
       },
       default: 'random',
       help: '',
