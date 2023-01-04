@@ -9,3 +9,4 @@ nearata-related-discussions:
       max_discussions_help: Default is <strong>5</strong>.
   forum:
     discussion_list_title: Related Discussions
+    no_results: No related discussions found
