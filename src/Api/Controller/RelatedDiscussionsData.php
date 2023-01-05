@@ -48,6 +48,14 @@ class RelatedDiscussionsData
                 })->first();
 
                 return $i->tags->firstWhere('name', $tags);
+            })
+            // flarum/approval
+            ->filter(function (Discussion $i) {
+                if (is_null($i->is_approved)) {
+                    return true;
+                }
+
+                return $i->is_approved;
             });
 
         $generator = $this->settings->get('nearata-related-discussions.generator');
