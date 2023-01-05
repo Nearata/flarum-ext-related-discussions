@@ -4,6 +4,7 @@ namespace Nearata\RelatedDiscussions\Api\Controller;
 
 use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Discussion\Discussion;
+use Flarum\Extension\ExtensionManager;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,10 +13,12 @@ use Tobscure\JsonApi\Document;
 class RelatedDiscussionsData
 {
     protected $settings;
+    protected $extensions;
 
-    public function __construct(SettingsRepositoryInterface $settings)
+    public function __construct(SettingsRepositoryInterface $settings, ExtensionManager $extensions)
     {
         $this->settings = $settings;
+        $this->extensions = $extensions;
     }
 
     public function __invoke(ShowDiscussionController $controller, Discussion $discussion, ServerRequestInterface $request, Document $document)
@@ -39,7 +42,7 @@ class RelatedDiscussionsData
             })
             // flarum/tags
             ->filter(function (Discussion $i) use ($discussion) {
-                if (is_null($discussion->tags)) {
+                if (!$this->extensions->isEnabled('flarum-tags')) {
                     return true;
                 }
 
@@ -51,7 +54,7 @@ class RelatedDiscussionsData
             })
             // flarum/approval
             ->filter(function (Discussion $i) {
-                if (is_null($i->is_approved)) {
+                if (!$this->extensions->isEnabled('flarum-approval')) {
                     return true;
                 }
 
