@@ -22,7 +22,7 @@ app.initializers.add('nearata/related-discussions', () => {
       original(),
       m('.DiscussionList.nearataRelatedDiscussions', [
         m('h3.DiscussionList-title', app.translator.trans('nearata-related-discussions.forum.discussion_list_title')),
-        discussions
+        discussions.length
           ? [
               m('ul.DiscussionList-discussions[role=feed]', [
                 discussions.map((discussion, index) => {

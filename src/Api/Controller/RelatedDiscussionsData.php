@@ -52,9 +52,24 @@ class RelatedDiscussionsData
 
         $generator = $this->settings->get('nearata-related-discussions.generator');
 
+        if ($generator == 'title') {
+            $alg = $this->settings->get('nearata-related-discussions.algorithm');
+
+            if ($alg == 'similar_text') {
+                $results = $results->filter(function (Discussion $i) use ($discussion) {
+                    $perc = 0;
+                    similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
+                    return $perc > 60;
+                });
+            }
+        }
+
+        $min = min($maxDiscussions, count($results));
+
         if ($generator == 'random') {
-            $min = min($maxDiscussions, count($results));
             $results = $results->random($min);
+        } else {
+            $results = $results->splice(0, $min);
         }
 
         $discussion['nearataRelatedDiscussions'] = $results;

@@ -14,9 +14,19 @@ app.initializers.add('nearata/related-discussions', () => {
       label: app.translator.trans('nearata-related-discussions.admin.settings.generator'),
       options: {
         random: app.translator.trans('nearata-related-discussions.admin.settings.generator_options.random'),
+        title: app.translator.trans('nearata-related-discussions.admin.settings.generator_options.title'),
       },
       default: 'random',
       help: '',
+    })
+    .registerSetting({
+      setting: 'nearata-related-discussions.algorithm',
+      type: 'select',
+      label: app.translator.trans('nearata-related-discussions.admin.settings.algorithm'),
+      options: {
+        similar_text: app.translator.trans('nearata-related-discussions.admin.settings.algorithm_options.similar_text'),
+      },
+      default: 'similar_text',
     })
     .registerSetting({
       setting: 'nearata-related-discussions.max-discussions',

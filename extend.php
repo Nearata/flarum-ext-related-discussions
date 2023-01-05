@@ -32,6 +32,7 @@ return [
     (new Extend\Settings)
         ->default('nearata-related-discussions.allow-guests', false)
         ->default('nearata-related-discussions.generator', 'random')
+        ->default('nearata-related-discussions.algorithm', 'similar_text')
         ->default('nearata-related-discussions.max-discussions', 5)
         ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', function ($value) {
             return boolval($value);
