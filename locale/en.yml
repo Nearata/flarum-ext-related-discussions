@@ -6,9 +6,6 @@ nearata-related-discussions:
       generator_options:
         random: Random
         title: By Title
-      algorithm: Algorithm
-      algorithm_options:
-        similar_text: PHP similar_text
       max_discussions: Max Discussions
       max_discussions_help: Default is <strong>5</strong>.
   forum:

@@ -20,15 +20,6 @@ app.initializers.add('nearata/related-discussions', () => {
       help: '',
     })
     .registerSetting({
-      setting: 'nearata-related-discussions.algorithm',
-      type: 'select',
-      label: app.translator.trans('nearata-related-discussions.admin.settings.algorithm'),
-      options: {
-        similar_text: app.translator.trans('nearata-related-discussions.admin.settings.algorithm_options.similar_text'),
-      },
-      default: 'similar_text',
-    })
-    .registerSetting({
       setting: 'nearata-related-discussions.max-discussions',
       type: 'number',
       label: app.translator.trans('nearata-related-discussions.admin.settings.max_discussions'),
