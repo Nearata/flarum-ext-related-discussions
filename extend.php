@@ -33,7 +33,9 @@ return [
         ->default('nearata-related-discussions.allow-guests', false)
         ->default('nearata-related-discussions.generator', 'random')
         ->default('nearata-related-discussions.max-discussions', 5)
+        ->default('nearata-related-discussions.position', 'first_post')
         ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', function ($value) {
             return boolval($value);
         })
+        ->serializeToForum('nearataRelatedDiscussionsPosition', 'nearata-related-discussions.position')
 ];

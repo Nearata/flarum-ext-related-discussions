@@ -8,6 +8,10 @@ nearata-related-discussions:
         title: By Title
       max_discussions: Max Discussions
       max_discussions_help: Default is <strong>5</strong>.
+      position: Position
+      position_options:
+        first_post: After First Post
+        last_post: After Last Post
   forum:
     discussion_list_title: Related Discussions
     no_results: No related discussions found

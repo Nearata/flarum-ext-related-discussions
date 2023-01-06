@@ -1,5 +1,5 @@
 import app from 'flarum/forum/app';
-import { override } from 'flarum/common/extend';
+import { extend } from 'flarum/common/extend';
 import PostStream from 'flarum/forum/components/PostStream';
 import Discussion from 'flarum/common/models/Discussion';
 import DiscussionListItem from 'flarum/forum/components/DiscussionListItem';
@@ -9,18 +9,19 @@ app.initializers.add('nearata/related-discussions', () => {
   app.store.models.nearataRelatedDiscussions = Discussion;
   Discussion.prototype.nearataRelatedDiscussions = Discussion.hasMany<Discussion>('nearataRelatedDiscussions');
 
-  override(PostStream.prototype, 'view', function (original) {
+  extend(PostStream.prototype, 'view', function (element) {
     const allowGuests = app.forum.attribute('nearataRelatedDiscussionsAllowGuests');
 
     if (!app.session.user && !allowGuests) {
-      return original();
+      return;
     }
 
-    const discussions: Array<Discussion> = this.discussion.nearataRelatedDiscussions();
+    const position: string = app.forum.attribute('nearataRelatedDiscussionsPosition');
 
-    return [
-      original(),
-      m('.DiscussionList.nearataRelatedDiscussions', [
+    const list = (position: number) => {
+      const discussions: Array<Discussion> = this.discussion.nearataRelatedDiscussions();
+
+      return m(`.DiscussionList.nearataRelatedDiscussions.position${position}`, [
         m('h3.DiscussionList-title', app.translator.trans('nearata-related-discussions.forum.discussion_list_title')),
         discussions.length
           ? [
@@ -40,7 +41,15 @@ app.initializers.add('nearata/related-discussions', () => {
               ]),
             ]
           : m(Placeholder, { text: app.translator.trans('nearata-related-discussions.forum.no_results') }),
-      ]),
-    ];
+      ]);
+    };
+
+    if (position === 'first_post') {
+      element.children.splice(1, 0, list(1));
+    }
+
+    if (position === 'last_post') {
+      element.children.splice(element.children.length - 1, 0, list(2));
+    }
   });
 });

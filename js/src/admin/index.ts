@@ -25,5 +25,15 @@ app.initializers.add('nearata/related-discussions', () => {
       label: app.translator.trans('nearata-related-discussions.admin.settings.max_discussions'),
       min: 1,
       help: app.translator.trans('nearata-related-discussions.admin.settings.max_discussions_help'),
+    })
+    .registerSetting({
+      setting: 'nearata-related-discussions.position',
+      type: 'select',
+      label: app.translator.trans('nearata-related-discussions.admin.settings.position'),
+      options: {
+        first_post: app.translator.trans('nearata-related-discussions.admin.settings.position_options.first_post'),
+        last_post: app.translator.trans('nearata-related-discussions.admin.settings.position_options.last_post'),
+      },
+      default: 'first_post',
     });
 });
