@@ -35,5 +35,12 @@ app.initializers.add('nearata/related-discussions', () => {
         last_post: app.translator.trans('nearata-related-discussions.admin.settings.position_options.last_post'),
       },
       default: 'first_post',
+    })
+    .registerSetting({
+      setting: 'nearata-related-discussions.cache',
+      type: 'text',
+      label: app.translator.trans('nearata-related-discussions.admin.settings.cache'),
+      help: app.translator.trans('nearata-related-discussions.admin.settings.cache_help'),
+      placeholder: '0d0h0m',
     });
 });

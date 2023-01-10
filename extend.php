@@ -8,6 +8,7 @@ use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Nearata\RelatedDiscussions\Api\Controller\RelatedDiscussionsData;
 use Nearata\RelatedDiscussions\Api\Serializer\RelatedDiscussionsSerializer;
+use Nearata\RelatedDiscussions\Listener\SettingsSavingListener;
 
 return [
     (new Extend\Frontend('forum'))
@@ -34,8 +35,12 @@ return [
         ->default('nearata-related-discussions.generator', 'random')
         ->default('nearata-related-discussions.max-discussions', 5)
         ->default('nearata-related-discussions.position', 'first_post')
+        ->default('nearata-related-discussions.cache', '0d0h0m')
         ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', function ($value) {
             return boolval($value);
         })
-        ->serializeToForum('nearataRelatedDiscussionsPosition', 'nearata-related-discussions.position')
+        ->serializeToForum('nearataRelatedDiscussionsPosition', 'nearata-related-discussions.position'),
+
+    (new Extend\Event)
+        ->listen(\Flarum\Settings\Event\Saving::class, SettingsSavingListener::class),
 ];

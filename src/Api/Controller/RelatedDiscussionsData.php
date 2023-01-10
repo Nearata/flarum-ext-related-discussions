@@ -2,23 +2,29 @@
 
 namespace Nearata\RelatedDiscussions\Api\Controller;
 
+use Carbon\Carbon;
 use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Discussion\Discussion;
 use Flarum\Extension\ExtensionManager;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
+use Illuminate\Contracts\Cache\Repository;
 use Psr\Http\Message\ServerRequestInterface;
 use Tobscure\JsonApi\Document;
 
 class RelatedDiscussionsData
 {
+    protected $pattern = '/^(?<days>([0-9]|[1-2][0-9]|[3][0-1]))d(?<hours>([0-9]|[1][0-9]|[2][0-3]))h(?<minutes>([0-9]|[1-5][0-9]))m$/';
+
     protected $settings;
     protected $extensions;
+    protected $cache;
 
-    public function __construct(SettingsRepositoryInterface $settings, ExtensionManager $extensions)
+    public function __construct(SettingsRepositoryInterface $settings, ExtensionManager $extensions, Repository $cache)
     {
         $this->settings = $settings;
         $this->extensions = $extensions;
+        $this->cache = $cache;
     }
 
     public function __invoke(ShowDiscussionController $controller, Discussion $discussion, ServerRequestInterface $request, Document $document)
@@ -30,12 +36,30 @@ class RelatedDiscussionsData
             return;
         }
 
-        $maxDiscussions = (int) $this->settings->get('nearata-related-discussions.max-discussions');
+        $cache = (string) $this->settings->get('nearata-related-discussions.cache');
 
-        if ($maxDiscussions == 0) {
-            $maxDiscussions = 5;
+        preg_match($this->pattern, $cache, $matches);
+        $days = intval($matches['days']);
+        $hours = intval($matches['hours']);
+        $minutes = intval($matches['minutes']);
+
+        $hasCache = $days || $hours || $minutes;
+
+        if ($hasCache) {
+            $ttl = Carbon::now()->addDays($days)->addHours($hours)->addMinutes($minutes);
+        } else {
+            $ttl = 0;
         }
 
+        $results = $this->cache->remember('nearataRelatedDiscussions' . $discussion->id, $ttl, function () use ($discussion) {
+            return $this->getResults($discussion);
+        });
+
+        $discussion['nearataRelatedDiscussions'] = $results;
+    }
+
+    private function getResults(Discussion $discussion)
+    {
         $results = Discussion::all()
             ->filter(function (Discussion $i) use ($discussion) {
                 return $i->id != $discussion->id;
@@ -71,6 +95,12 @@ class RelatedDiscussionsData
             });
         }
 
+        $maxDiscussions = (int) $this->settings->get('nearata-related-discussions.max-discussions');
+
+        if ($maxDiscussions == 0) {
+            $maxDiscussions = 5;
+        }
+
         $min = min($maxDiscussions, count($results));
 
         if ($generator == 'random') {
@@ -79,6 +109,6 @@ class RelatedDiscussionsData
             $results = $results->splice(0, $min);
         }
 
-        $discussion['nearataRelatedDiscussions'] = $results;
+        return $results;
     }
 }
