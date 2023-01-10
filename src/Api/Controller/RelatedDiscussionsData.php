@@ -64,6 +64,9 @@ class RelatedDiscussionsData
             ->filter(function (Discussion $i) use ($discussion) {
                 return $i->id != $discussion->id;
             })
+            ->filter(function (Discussion $i) {
+                return is_null($i->hidden_at);
+            })
             // flarum/tags
             ->filter(function (Discussion $i) use ($discussion) {
                 if (!$this->extensions->isEnabled('flarum-tags')) {
