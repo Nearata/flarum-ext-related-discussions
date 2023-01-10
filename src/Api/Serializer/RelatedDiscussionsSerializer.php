@@ -6,5 +6,4 @@ use Flarum\Api\Serializer\DiscussionSerializer;
 
 class RelatedDiscussionsSerializer extends DiscussionSerializer
 {
-    protected $type = 'nearataRelatedDiscussions';
 }

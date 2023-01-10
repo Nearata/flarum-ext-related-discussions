@@ -17,16 +17,6 @@ export default class RelatedDiscussionList extends Component {
     this.position = this.attrs.position;
   }
 
-  oncreate(vnode: Mithril.VnodeDOM<this>) {
-    super.oncreate(vnode);
-
-    const controls = this.element.querySelectorAll('.DiscussionListItem-controls');
-
-    for (const i of controls) {
-      i.remove();
-    }
-  }
-
   view() {
     const allowGuests = app.forum.attribute('nearataRelatedDiscussionsAllowGuests');
 
