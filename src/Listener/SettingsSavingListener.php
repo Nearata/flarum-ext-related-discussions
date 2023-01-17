@@ -19,6 +19,10 @@ class SettingsSavingListener
     {
         $setting = Arr::get($event->settings, 'nearata-related-discussions.cache');
 
+        if (is_null($setting)) {
+            return;
+        }
+
         $this->validator->assertValid([ 'cache' => $setting ]);
     }
 }
