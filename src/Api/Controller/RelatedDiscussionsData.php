@@ -60,56 +60,51 @@ class RelatedDiscussionsData
 
     private function getResults(Discussion $discussion)
     {
-        $results = Discussion::all()
-            ->filter(function (Discussion $i) use ($discussion) {
-                return $i->id != $discussion->id;
-            })
-            ->filter(function (Discussion $i) {
-                return is_null($i->hidden_at);
-            })
-            // flarum/tags
-            ->filter(function (Discussion $i) use ($discussion) {
-                if (!$this->extensions->isEnabled('flarum-tags')) {
-                    return true;
-                }
+        /** @var \Illuminate\Database\Query\Builder */
+        $query = Discussion::query()
+            ->whereKeyNot($discussion->id)
+            ->whereNull('hidden_at');
 
-                $tags = $discussion->tags->map(function ($i) {
-                    return $i->name;
-                })->first();
+        if ($this->extensions->isEnabled('flarum-approval')) {
+            $query = $query->where('is_approved', '=', 1);
+        }
 
-                return $i->tags->firstWhere('name', $tags);
-            })
-            // flarum/approval
-            ->filter(function (Discussion $i) {
-                if (!$this->extensions->isEnabled('flarum-approval')) {
-                    return true;
-                }
+        if ($this->extensions->isEnabled('flarum-tags')) {
+            /** @var int */
+            $tagId = $discussion->tags->map(function ($i) {
+                return $i->id;
+            })->first();
 
-                return $i->is_approved;
-            });
-
-        $generator = $this->settings->get('nearata-related-discussions.generator');
-
-        if ($generator == 'title') {
-            $results = $results->filter(function (Discussion $i) use ($discussion) {
-                $perc = 0;
-                similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
-                return $perc > 60;
+            $query = $query->with('tags')->whereHas('tags', function ($query) use ($tagId) {
+                $query->where('tag_id', '=', $tagId);
             });
         }
 
         $maxDiscussions = (int) $this->settings->get('nearata-related-discussions.max-discussions');
 
-        if ($maxDiscussions == 0) {
+        if ($maxDiscussions <= 0) {
             $maxDiscussions = 5;
         }
 
-        $min = min($maxDiscussions, count($results));
+        $generator = (string) $this->settings->get('nearata-related-discussions.generator');
+
+        if ($generator == 'title') {
+            /** @var \Illuminate\Database\Eloquent\Collection */
+            $all = $query->get(['id', 'title']);
+
+            $ids = $all->filter(function (Discussion $i) use ($discussion) {
+                $perc = 0;
+                similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
+                return $perc > 60;
+            })->map(function (Discussion $i) {
+                return $i->id;
+            })->splice(0, $maxDiscussions);
+
+            $results = Discussion::find($ids);
+        }
 
         if ($generator == 'random') {
-            $results = $results->random($min);
-        } else {
-            $results = $results->splice(0, $min);
+            $results = $query->inRandomOrder()->limit($maxDiscussions)->get();
         }
 
         return $results;
