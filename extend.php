@@ -7,7 +7,6 @@ use Flarum\Api\Serializer\DiscussionSerializer;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Nearata\RelatedDiscussions\Api\Controller\RelatedDiscussionsData;
-use Nearata\RelatedDiscussions\Api\Serializer\RelatedDiscussionsSerializer;
 use Nearata\RelatedDiscussions\Listener\SettingsSavingListener;
 
 return [
@@ -24,7 +23,7 @@ return [
         ->belongsToMany('nearataRelatedDiscussions', Discussion::class, 'nearata_related_discussions', 'discussion_id', 'related_discussion_id'),
 
     (new Extend\ApiSerializer(DiscussionSerializer::class))
-        ->hasMany('nearataRelatedDiscussions', RelatedDiscussionsSerializer::class),
+        ->hasMany('nearataRelatedDiscussions', DiscussionSerializer::class),
 
     (new Extend\ApiController(ShowDiscussionController::class))
         ->addInclude(['nearataRelatedDiscussions', 'nearataRelatedDiscussions.user', 'nearataRelatedDiscussions.tags'])
