@@ -1,18 +1,16 @@
 <?php
 
-namespace Nearata\RelatedDiscussions\Api\Controller;
+namespace Nearata\RelatedDiscussions\Discussion\Filter;
 
 use Carbon\Carbon;
-use Flarum\Api\Controller\ShowDiscussionController;
 use Flarum\Discussion\Discussion;
 use Flarum\Extension\ExtensionManager;
-use Flarum\Http\RequestUtil;
+use Flarum\Filter\FilterInterface;
+use Flarum\Filter\FilterState;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository;
-use Psr\Http\Message\ServerRequestInterface;
-use Tobscure\JsonApi\Document;
 
-class RelatedDiscussionsData
+class RelatedDiscussionsFilter implements FilterInterface
 {
     protected $pattern = '/^(?<days>([0-9]|[1-2][0-9]|[3][0-1]))d(?<hours>([0-9]|[1][0-9]|[2][0-3]))h(?<minutes>([0-9]|[1-5][0-9]))m$/';
 
@@ -27,35 +25,55 @@ class RelatedDiscussionsData
         $this->cache = $cache;
     }
 
-    public function __invoke(ShowDiscussionController $controller, Discussion $discussion, ServerRequestInterface $request, Document $document)
+    public function getFilterKey(): string
     {
-        $actor = RequestUtil::getActor($request);
+        return 'nearataRelatedDiscussions';
+    }
+
+    public function filter(FilterState $filterState, string $filterValue, bool $negate)
+    {
+        if (!$filterValue) {
+            return;
+        }
+
+        $discussionId = intval($filterValue);
+
+        if ($discussionId == 0) {
+            return;
+        }
+
+        /** @var ?Discussion */
+        $discussion = Discussion::find($discussionId);
+
+        if (is_null($discussion)) {
+            return;
+        }
+
         $allowGuests = $this->settings->get('nearata-related-discussions.allow-guests');
 
-        if (!$allowGuests && $actor->isGuest()) {
+        if (!$allowGuests && $filterState->getActor()->isGuest()) {
             return;
         }
 
         $cache = (string) $this->settings->get('nearata-related-discussions.cache');
 
         preg_match($this->pattern, $cache, $matches);
+
         $days = intval($matches['days']);
         $hours = intval($matches['hours']);
         $minutes = intval($matches['minutes']);
 
-        $hasCache = $days || $hours || $minutes;
-
-        if ($hasCache) {
+        if ($days || $hours || $minutes) {
             $ttl = Carbon::now()->addDays($days)->addHours($hours)->addMinutes($minutes);
         } else {
             $ttl = 0;
         }
 
-        $results = $this->cache->remember('nearataRelatedDiscussions' . $discussion->id, $ttl, function () use ($discussion) {
+        $ids = $this->cache->remember('nearataRelatedDiscussions' . $discussionId, $ttl, function () use ($discussion) {
             return $this->getResults($discussion);
         });
 
-        $discussion['nearataRelatedDiscussions'] = $results;
+        $filterState->getQuery()->whereIn('id', $ids);
     }
 
     private function getResults(Discussion $discussion)
@@ -92,19 +110,22 @@ class RelatedDiscussionsData
             /** @var \Illuminate\Database\Eloquent\Collection */
             $all = $query->get(['id', 'title']);
 
-            $ids = $all->filter(function (Discussion $i) use ($discussion) {
+            $results = $all->filter(function (Discussion $i) use ($discussion) {
                 $perc = 0;
                 similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
                 return $perc > 60;
             })->map(function (Discussion $i) {
                 return $i->id;
             })->splice(0, $maxDiscussions);
-
-            $results = Discussion::find($ids);
         }
 
         if ($generator == 'random') {
-            $results = $query->inRandomOrder()->limit($maxDiscussions)->get();
+            $results = $query->inRandomOrder()
+                ->limit($maxDiscussions)
+                ->get('id')
+                ->map(function (Discussion $discussion) {
+                    return $discussion->id;
+                });
         }
 
         return $results;

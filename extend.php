@@ -2,11 +2,9 @@
 
 namespace Nearata\RelatedDiscussions;
 
-use Flarum\Api\Controller\ShowDiscussionController;
-use Flarum\Api\Serializer\DiscussionSerializer;
-use Flarum\Discussion\Discussion;
+use Flarum\Discussion\Filter\DiscussionFilterer;
 use Flarum\Extend;
-use Nearata\RelatedDiscussions\Api\Controller\RelatedDiscussionsData;
+use Nearata\RelatedDiscussions\Discussion\Filter\RelatedDiscussionsFilter;
 use Nearata\RelatedDiscussions\Listener\SettingsSavingListener;
 
 return [
@@ -19,15 +17,8 @@ return [
 
     new Extend\Locales(__DIR__.'/locale'),
 
-    (new Extend\Model(Discussion::class))
-        ->belongsToMany('nearataRelatedDiscussions', Discussion::class, 'nearata_related_discussions', 'discussion_id', 'related_discussion_id'),
-
-    (new Extend\ApiSerializer(DiscussionSerializer::class))
-        ->hasMany('nearataRelatedDiscussions', DiscussionSerializer::class),
-
-    (new Extend\ApiController(ShowDiscussionController::class))
-        ->addInclude(['nearataRelatedDiscussions', 'nearataRelatedDiscussions.user', 'nearataRelatedDiscussions.tags'])
-        ->prepareDataForSerialization(RelatedDiscussionsData::class),
+    (new Extend\Filter(DiscussionFilterer::class))
+        ->addFilter(RelatedDiscussionsFilter::class),
 
     (new Extend\Settings)
         ->default('nearata-related-discussions.allow-guests', false)
