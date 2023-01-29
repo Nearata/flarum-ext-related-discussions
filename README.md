@@ -23,7 +23,3 @@ php flarum cache:clear
 composer remove nearata/flarum-ext-related-discussions
 php flarum cache:clear
 ```
-
-## Links
-
-- [Packagist](https://packagist.org/packages/nearata/flarum-ext-related-discussions)
