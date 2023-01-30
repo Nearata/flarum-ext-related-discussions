@@ -22,19 +22,36 @@ export default class RelatedDiscussionList extends Component {
     this.relatedDiscussionState.load();
   }
 
-  view() {
-    const allowGuests = app.forum.attribute(
-      "nearataRelatedDiscussionsAllowGuests"
-    );
-
-    if (!app.session.user && !allowGuests) {
-      return;
-    }
-
+  currentStatusElement() {
     if (this.relatedDiscussionState.isLoading()) {
       return <LoadingIndicator />;
     }
 
+    if (!this.relatedDiscussionState.getData().length) {
+      return (
+        <Placeholder
+          text={app.translator.trans(
+            "nearata-related-discussions.forum.no_results"
+          )}
+        />
+      );
+    }
+
+    return this.relatedDiscussionState.getData().map((discussion, index) => {
+      return (
+        <li
+          data-id={discussion.id()}
+          role="article"
+          aria-setsize="-1"
+          aria-posinset={index}
+        >
+          <DiscussionListItem discussion={discussion} params={{}} />
+        </li>
+      );
+    });
+  }
+
+  view() {
     return (
       <div
         class={`DiscussionList nearataRelatedDiscussions position${this.position}`}
@@ -45,26 +62,7 @@ export default class RelatedDiscussionList extends Component {
           )}
         </h3>
         <ul class="DiscussionList-discussions" role="feed">
-          {this.relatedDiscussionState.getData().length ? (
-            this.relatedDiscussionState.getData().map((discussion, index) => {
-              return (
-                <li
-                  data-id={discussion.id()}
-                  role="article"
-                  aria-setsize="-1"
-                  aria-posinset={index}
-                >
-                  <DiscussionListItem discussion={discussion} params={{}} />
-                </li>
-              );
-            })
-          ) : (
-            <Placeholder
-              text={app.translator.trans(
-                "nearata-related-discussions.forum.no_results"
-              )}
-            />
-          )}
+          {this.currentStatusElement()}
         </ul>
       </div>
     );

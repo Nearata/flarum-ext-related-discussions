@@ -5,16 +5,25 @@ import PostStream from "flarum/forum/components/PostStream";
 
 app.initializers.add("nearata/related-discussions", () => {
   extend(PostStream.prototype, "view", function (element) {
+    const allowGuests = app.forum.attribute(
+      "nearataRelatedDiscussionsAllowGuests"
+    );
+
+    if (!app.session.user && !allowGuests) {
+      return;
+    }
+
     const discussionId = this.discussion.id();
     const position: string = app.forum.attribute(
       "nearataRelatedDiscussionsPosition"
     );
+    const key = "nearataRelatedDiscussions";
 
     if (position === "first_post") {
       element.children.splice(
         1,
         0,
-        m(RelatedDiscussionList, { discussionId, position: 1 })
+        m(RelatedDiscussionList, { key, discussionId, position: 1 })
       );
     }
 
@@ -22,7 +31,7 @@ app.initializers.add("nearata/related-discussions", () => {
       element.children.splice(
         element.children.length - 1,
         0,
-        m(RelatedDiscussionList, { discussionId, position: 2 })
+        m(RelatedDiscussionList, { key, discussionId, position: 2 })
       );
     }
   });
