@@ -1,6 +1,6 @@
 import app from "flarum/admin/app";
 
-app.initializers.add("nearata/related-discussions", () => {
+app.initializers.add("nearata-related-discussions", () => {
   app.extensionData
     .for("nearata-related-discussions")
     .registerSetting({
@@ -50,6 +50,9 @@ app.initializers.add("nearata/related-discussions", () => {
         ),
         last_post: app.translator.trans(
           "nearata-related-discussions.admin.settings.position_options.last_post"
+        ),
+        reply_block: app.translator.trans(
+          "nearata-related-discussions.admin.settings.position_options.reply_block"
         ),
       },
       default: "first_post",
