@@ -11,3 +11,7 @@
 ## After reply block
 
 ![after reply block](ss_3.png)
+
+## Extension Settings (Admin)
+
+![extension settings admin](ss_4.png)
