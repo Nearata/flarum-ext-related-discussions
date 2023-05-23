@@ -8,6 +8,9 @@ use Nearata\RelatedDiscussions\Validator\SettingsSavingValidator;
 
 class SettingsSavingListener
 {
+    /**
+     * @var SettingsSavingValidator
+     */
     protected $validator;
 
     public function __construct(SettingsSavingValidator $validator)

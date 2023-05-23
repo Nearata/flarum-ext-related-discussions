@@ -14,10 +14,19 @@ class RelatedDiscussionsFilter implements FilterInterface
 {
     protected $pattern = '/^(?<days>([0-9]|[1-2][0-9]|[3][0-1]))d(?<hours>([0-9]|[1][0-9]|[2][0-3]))h(?<minutes>([0-9]|[1-5][0-9]))m$/';
 
+    /**
+     * @var SettingsRepositoryInterface
+     */
     protected $settings;
 
+    /**
+     * @var ExtensionManager
+     */
     protected $extensions;
 
+    /**
+     * @var Repository
+     */
     protected $cache;
 
     public function __construct(SettingsRepositoryInterface $settings, ExtensionManager $extensions, Repository $cache)
@@ -109,17 +118,24 @@ class RelatedDiscussionsFilter implements FilterInterface
         $generator = (string) $this->settings->get('nearata-related-discussions.generator');
 
         if ($generator == 'title') {
-            /** @var \Illuminate\Database\Eloquent\Collection */
-            $all = $query->get(['id', 'title']);
+            $results = collect([], $maxDiscussions);
 
-            $results = $all->filter(function (Discussion $i) use ($discussion) {
-                $perc = 0;
-                similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
+            $query->select('id', 'title')->chunk(200, function ($collection) use ($results, $discussion, $maxDiscussions) {
+                $mainDiscussionTitle = strtolower($discussion->title);
 
-                return $perc > 60;
-            })->map(function (Discussion $i) {
-                return $i->id;
-            })->splice(0, $maxDiscussions);
+                foreach ($collection as $i) {
+                    if ($results->count() == $maxDiscussions) {
+                        return false;
+                    }
+
+                    $perc = 0;
+                    similar_text($mainDiscussionTitle, strtolower($i->title), $perc);
+
+                    if ($perc > 60) {
+                        $results->push($i->id);
+                    }
+                }
+            });
         }
 
         if ($generator == 'random') {

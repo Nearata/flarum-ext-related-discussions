@@ -26,9 +26,7 @@ return [
         ->default('nearata-related-discussions.max-discussions', 5)
         ->default('nearata-related-discussions.position', 'first_post')
         ->default('nearata-related-discussions.cache', '0d0h0m')
-        ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', function ($value) {
-            return boolval($value);
-        })
+        ->serializeToForum('nearataRelatedDiscussionsAllowGuests', 'nearata-related-discussions.allow-guests', 'boolval')
         ->serializeToForum('nearataRelatedDiscussionsPosition', 'nearata-related-discussions.position'),
 
     (new Extend\Event)
