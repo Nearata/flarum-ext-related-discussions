@@ -24,7 +24,11 @@ app.initializers.add("nearata-related-discussions", () => {
       element.children?.splice(
         1,
         0,
-        m(RelatedDiscussionList, { key, discussionId, position: 1 })
+        <RelatedDiscussionList
+          key={key}
+          discussionId={discussionId}
+          position={1}
+        />
       );
     }
 
@@ -32,7 +36,11 @@ app.initializers.add("nearata-related-discussions", () => {
       element.children?.splice(
         element.children.length - 1,
         0,
-        m(RelatedDiscussionList, { key, discussionId, position: 2 })
+        <RelatedDiscussionList
+          key={key}
+          discussionId={discussionId}
+          position={2}
+        />
       );
     }
   });
@@ -54,7 +62,7 @@ app.initializers.add("nearata-related-discussions", () => {
     if (position === "reply_block") {
       items.add(
         "nearataRelatedDiscussions",
-        m(RelatedDiscussionList, { discussionId, position: 3 })
+        <RelatedDiscussionList discussionId={discussionId} position={3} />
       );
     }
   });

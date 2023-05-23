@@ -14,15 +14,15 @@ export default class RelatedDiscussionList extends Component {
   oninit(vnode: Mithril.Vnode<this>) {
     super.oninit(vnode);
 
-    this.position = this.attrs.position;
+    this.position = vnode.attrs.position;
 
     this.relatedDiscussionState = new RelatedDiscussionState(
-      this.attrs.discussionId
+      vnode.attrs.discussionId
     );
     this.relatedDiscussionState.load();
   }
 
-  currentStatusElement() {
+  content() {
     if (this.relatedDiscussionState.isLoading()) {
       return <LoadingIndicator />;
     }
@@ -62,7 +62,7 @@ export default class RelatedDiscussionList extends Component {
           )}
         </h3>
         <ul class="DiscussionList-discussions" role="feed">
-          {this.currentStatusElement()}
+          {this.content()}
         </ul>
       </div>
     );

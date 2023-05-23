@@ -19,9 +19,10 @@ export default class RelatedDiscussionState {
       })
       .then((r: any) => {
         this.data.push(...r);
-
+      })
+      .catch((e) => console.error(e))
+      .finally(() => {
         this.loading = false;
-
         m.redraw();
       });
   }
