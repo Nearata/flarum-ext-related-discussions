@@ -1,6 +1,10 @@
 # Related Discussions
 
-A [Flarum](http://flarum.org) extension. Shows related discussions.
+> Shows related discussions.
+
+## Screenshots
+
+See the [screenshots](screenshots) subfolder.
 
 ## Install
 
