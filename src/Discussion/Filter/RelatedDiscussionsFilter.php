@@ -15,7 +15,9 @@ class RelatedDiscussionsFilter implements FilterInterface
     protected $pattern = '/^(?<days>([0-9]|[1-2][0-9]|[3][0-1]))d(?<hours>([0-9]|[1][0-9]|[2][0-3]))h(?<minutes>([0-9]|[1-5][0-9]))m$/';
 
     protected $settings;
+
     protected $extensions;
+
     protected $cache;
 
     public function __construct(SettingsRepositoryInterface $settings, ExtensionManager $extensions, Repository $cache)
@@ -32,7 +34,7 @@ class RelatedDiscussionsFilter implements FilterInterface
 
     public function filter(FilterState $filterState, string $filterValue, bool $negate)
     {
-        if (!$filterValue) {
+        if (! $filterValue) {
             return;
         }
 
@@ -51,7 +53,7 @@ class RelatedDiscussionsFilter implements FilterInterface
 
         $allowGuests = $this->settings->get('nearata-related-discussions.allow-guests');
 
-        if (!$allowGuests && $filterState->getActor()->isGuest()) {
+        if (! $allowGuests && $filterState->getActor()->isGuest()) {
             return;
         }
 
@@ -69,7 +71,7 @@ class RelatedDiscussionsFilter implements FilterInterface
             $ttl = 0;
         }
 
-        $ids = $this->cache->remember('nearataRelatedDiscussions' . $discussionId, $ttl, function () use ($discussion) {
+        $ids = $this->cache->remember('nearataRelatedDiscussions'.$discussionId, $ttl, function () use ($discussion) {
             return $this->getResults($discussion);
         });
 
@@ -113,6 +115,7 @@ class RelatedDiscussionsFilter implements FilterInterface
             $results = $all->filter(function (Discussion $i) use ($discussion) {
                 $perc = 0;
                 similar_text(strtolower($discussion->title), strtolower($i->title), $perc);
+
                 return $perc > 60;
             })->map(function (Discussion $i) {
                 return $i->id;

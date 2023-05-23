@@ -23,6 +23,6 @@ class SettingsSavingListener
             return;
         }
 
-        $this->validator->assertValid([ 'cache' => $setting ]);
+        $this->validator->assertValid(['cache' => $setting]);
     }
 }
